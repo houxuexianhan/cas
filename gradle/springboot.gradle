@@ -2,7 +2,6 @@ apply plugin: "org.springframework.boot"
 
 bootRun.enabled = false
 bootRun.onlyIf { return false }
-tasks.remove(tasks['bootRun'])
 
 springBoot {
     mainClassName = "org.apereo.cas.web.CasWebApplication"
