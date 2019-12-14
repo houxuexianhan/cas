@@ -94,7 +94,8 @@ bootWar {
         archiveClasses = true
     */
     overlays {
-        /* https://docs.freefair.io/gradle-plugins/current/reference/#_io_freefair_war_overlay
+        /*
+            https://docs.freefair.io/gradle-plugins/current/reference/#_io_freefair_war_overlay
             Note: The "excludes" property is only for files in the war dependency.
             If a jar is excluded from the war, it could be brought back into the final war as a dependency
             of non-war dependencies. Those should be excluded via normal gradle dependency exclusions.
@@ -112,7 +113,6 @@ bootWar {
         }
     }
 }
-
 
 wrapper {
     distributionType = Wrapper.DistributionType.BIN

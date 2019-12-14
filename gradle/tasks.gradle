@@ -1,10 +1,12 @@
-import org.apache.ivy.util.url.*
+import org.apache.ivy.util.url.ApacheURLLister
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.gradle.api.tasks.Copy
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 
-import java.nio.file.*
-import org.gradle.internal.logging.text.StyledTextOutputFactory;
-import static org.gradle.internal.logging.text.StyledTextOutput.Style;
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+
+import static org.gradle.internal.logging.text.StyledTextOutput.Style
 
 buildscript {
     repositories {
@@ -14,6 +16,8 @@ buildscript {
     }
     dependencies {
         classpath "org.apache.ivy:ivy:${project.ivyVersion}"
+        classpath "org.apereo.cas:cas-server-core-api-configuration-model:${project.'cas.version'}"
+        classpath "org.apereo.cas:cas-server-core-configuration-metadata-repository:${project.'cas.version'}"
     }
 }
 
@@ -22,8 +26,8 @@ apply plugin: "de.undercouch.download"
 def tomcatDirectory = "${buildDir}/apache-tomcat-${tomcatVersion}"
 project.ext."tomcatDirectory" = tomcatDirectory
 
-def explodedDir="${buildDir}/cas"
-def explodedResourcesDir="${buildDir}/cas-resources"
+def explodedDir = "${buildDir}/cas"
+def explodedResourcesDir = "${buildDir}/cas-resources"
 def resourceJarName = "cas-server-webapp-resources"
 
 task copyCasConfiguration(type: Copy, group: "build", description: "Copy the CAS configuration from this project to /etc/cas/config") {
@@ -66,7 +70,7 @@ task setExecutable(group: "build", description: "Configure the project to run in
     }
 }
 
-task executable(type:Exec, group: "build", description: "Run the CAS web application in standalone executable mode") {
+task executable(type: Exec, group: "build", description: "Run the CAS web application in standalone executable mode") {
     dependsOn setExecutable, 'build'
     doFirst {
         workingDir "."
@@ -102,7 +106,7 @@ task downloadShell(group: "shell", description: "Download CAS shell jar from sna
         if (isRunningCasServerSnapshot(casServerVersion)) {
             def snapshotDir = "https://oss.sonatype.org/content/repositories/snapshots/org/apereo/cas/cas-server-support-shell/${casServerVersion}/"
             def files = new ApacheURLLister().listFiles(new URL(snapshotDir))
-            files = files.sort{it.path}
+            files = files.sort { it.path }
             files.each {
                 if (it.path.endsWith(".jar")) {
                     downloadFile = it
@@ -120,7 +124,7 @@ task downloadShell(group: "shell", description: "Download CAS shell jar from sna
     }
 }
 
-task runShell(group: "shell",  description: "Run the CAS shell") {
+task runShell(group: "shell", description: "Run the CAS shell") {
     dependsOn downloadShell
     doLast {
         println "Run the following command to launch the shell:\n\tjava -jar ${project.shellDir}/cas-server-support-shell-${casServerVersion}.jar"
@@ -148,7 +152,7 @@ task allDependenciesInsight(group: "build", type: DependencyInsightReportTask, d
 
 task allDependencies(group: "build", type: DependencyReportTask, description: "Display a graph of all project dependencies") {}
 
-task casVersion (group: "build", description: "Display the current CAS version") {
+task casVersion(group: "build", description: "Display the current CAS version") {
     doFirst {
         def verbose = project.hasProperty("verbose") && Boolean.valueOf(project.getProperty("verbose"))
         if (verbose) {
@@ -204,16 +208,73 @@ task createKeystore(group: "build", description: "Create CAS keystore") {
     }
 }
 
-task listTemplateViews (group: "build", description: "List all CAS views") {
+task listTemplateViews(group: "build", description: "List all CAS views") {
     dependsOn explodeWar
 
     doFirst {
         fileTree(explodedResourcesDir).matching {
             include "**/*.html"
         }
-        .collect { it.name }
-        .toSorted()
-        .each { println it }
+                .collect { it.name }
+                .toSorted()
+                .each { println it }
+    }
+}
+
+task exportConfigMetadata(group: "build", description: "Export collection of CAS properties") {
+    doLast {
+        def file = new File(project.rootDir, 'config-metadata.properties')
+        file.withWriter('utf-8') { writer ->
+            def metadataRepository = new org.apereo.cas.metadata.CasConfigurationMetadataRepository()
+            def repository = metadataRepository.repository;
+            repository.allGroups
+                    .values()
+                    .sort { o1, o2 -> o1.id <=> o2.id }
+                    .each({ group ->
+                        def groupProperties = group.properties
+                        if (!groupProperties.isEmpty()) {
+                            def groupId = group.id.equalsIgnoreCase("_ROOT_GROUP_") ? "" : group.id + "."
+
+                            writer.writeLine("# Group ${group.id}");
+                            writer.writeLine("# ====================")
+                            groupProperties
+                                    .values()
+                                    .sort { o1, o2 -> o1.id <=> o2.id }
+                                    .each({ property ->
+                                        def description = property.shortDescription
+                                        if (!property.shortDescription?.equalsIgnoreCase(property.description) && property.description != null) {
+                                            description = property.description.replace('\n', '#')
+                                        }
+                                        writer.writeLine("# ${description}");
+                                        writer.writeLine("# Type: ${property.type}");
+                                        if (property.deprecated) {
+                                            def deprecation = property.deprecation
+                                            writer.writeLine("# This setting is deprecated with a severity level of ${deprecation.level}.")
+                                            if (deprecation.shortReason != null) {
+                                                writer.writeLine("# because ${deprecation.shortReason}")
+                                            }
+                                            if (deprecation.replacement != null) {
+                                                writer.writeLine("# Replace with: ${deprecation.replacement}")
+                                            }
+                                        }
+                                        property.hints.valueHints.each {
+                                            if (it.value instanceof Object[]) {
+                                                if (it.value[0].toString().contains("RequiresModule")) {
+                                                    writer.writeLine("# Required module: org.apereo.cas:${it.description}")
+                                                    writer.writeLine("# Automatically included/available: ${it.value[1]}")
+                                                }
+                                            }
+                                            if (it.value.toString().contains("RequiredProperty")) {
+                                                writer.writeLine("# Note: This setting is required!")
+                                            }
+                                        }
+                                        writer.writeLine("${groupId}${property.name}=${property.defaultValue}")
+                                        writer.writeLine("")
+                                    });
+                        }
+                    });
+        }
+        println "Configuration metadata is available at ${file.absolutePath}"
     }
 }
 
