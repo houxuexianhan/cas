@@ -315,3 +315,10 @@ task getResource(group: "build", description: "Fetch a CAS resource and move it 
 def isRunningCasServerSnapshot(casServerVersion) {
     return "${casServerVersion}".contains("-SNAPSHOT")
 }
+
+task verifyRequiredJavaVersion {
+    logger.info "Checking current Java version ${JavaVersion.current()} for required Java version ${project.targetCompatibility}"
+    if (!JavaVersion.current().name.equalsIgnoreCase("${project.targetCompatibility}")) {
+        throw new GradleException("Current Java version ${JavaVersion.current()} does not match required Java version ${project.targetCompatibility}")
+    }
+}
