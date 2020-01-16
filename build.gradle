@@ -85,8 +85,3 @@ idea {
         downloadSources = true
     }
 }
-
-wrapper {
-    distributionType = Wrapper.DistributionType.BIN
-    gradleVersion = "${project.gradleVersion}"
-}
