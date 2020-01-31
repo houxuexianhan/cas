@@ -17,8 +17,8 @@ jib {
             username = "*******"
             password = "*******"
         }
-        tags = [casServerVersion]
         */
+        tags = ["v" + casServerVersion]
     }
     container {
         creationTime = "USE_CURRENT_TIMESTAMP"
