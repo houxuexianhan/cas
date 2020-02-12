@@ -23,6 +23,7 @@ bootRun {
     classpath = configurations.bootRunConfig + sourceSets.main.compileClasspath + sourceSets.main.runtimeClasspath
     doFirst {
         sourceResources sourceSets.bootRunSources
+        systemProperties = System.properties
     }
 
     def list = []

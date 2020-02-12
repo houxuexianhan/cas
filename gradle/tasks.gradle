@@ -63,6 +63,7 @@ task run(group: "build", description: "Run the CAS web application in embedded c
             main = "-jar"
             jvmArgs = casRunArgs
             args = ["build/libs/${casWebApplicationBinaryName}"]
+            systemProperties = System.properties
             logger.info "Started ${commandLine}"
         }
     }
@@ -97,6 +98,7 @@ task debug(group: "build", description: "Debug the CAS web application in embedd
             jvmArgs = casArgs
             debug = true
             args = ["build/libs/${casWebApplicationBinaryName}"]
+            systemProperties = System.properties
             logger.info "Started ${commandLine}"
         }
     }
