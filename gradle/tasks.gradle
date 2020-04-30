@@ -314,7 +314,11 @@ task getResource(group: "build", description: "Fetch a CAS resource and move it 
             return
         }
         if (results.size() > 1) {
-            println "Multiple resources found matching ${resourceName}: ${results}"
+            println "Multiple resources found matching ${resourceName}:\n"
+            results.each {
+                println "\t-" + it.path.replace(explodedResourcesDir, "")
+            }
+            println "\nNarrow down your search criteria and try again."
             return
         }
 
