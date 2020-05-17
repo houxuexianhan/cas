@@ -37,7 +37,7 @@ def explodedResourcesDir = "${buildDir}/cas-resources"
 def resourcesJarName = "cas-server-webapp-resources"
 def templateViewsJarName = "cas-server-support-thymeleaf"
 
-task copyCasConfiguration(type: Copy, group: "build", description: "Copy the CAS configuration from this project to /etc/cas/config") {
+task copyCasConfiguration(type: Copy, group: "CAS", description: "Copy the CAS configuration from this project to /etc/cas/config") {
     from "etc/cas/config"
     into new File('/etc/cas/config').absolutePath
     doFirst {
@@ -45,7 +45,7 @@ task copyCasConfiguration(type: Copy, group: "build", description: "Copy the CAS
     }
 }
 
-task explodeWarOnly(type: Copy, group: "build", description: "Explodes the CAS web application archive") {
+task explodeWarOnly(type: Copy, group: "CAS", description: "Explodes the CAS web application archive") {
     dependsOn 'build'
     from zipTree("build/libs/${casWebApplicationBinaryName}")
     into explodedDir
@@ -54,7 +54,7 @@ task explodeWarOnly(type: Copy, group: "build", description: "Explodes the CAS w
     }
 }
 
-task explodeWar(type: Copy, group: "build", description: "Explodes the CAS archive and resources jar from the CAS web application archive") {
+task explodeWar(type: Copy, group: "CAS", description: "Explodes the CAS archive and resources jar from the CAS web application archive") {
     dependsOn explodeWarOnly
     from zipTree("${explodedDir}/WEB-INF/lib/${templateViewsJarName}-${casServerVersion}.jar")
     into explodedResourcesDir
@@ -81,14 +81,14 @@ task run(group: "build", description: "Run the CAS web application in embedded c
     }
 }
 
-task setExecutable(group: "build", description: "Configure the project to run in executable mode") {
+task setExecutable(group: "CAS", description: "Configure the project to run in executable mode") {
     doFirst {
         project.setProperty("executable", "true")
         logger.info "Configuring the project as executable"
     }
 }
 
-task executable(type: Exec, group: "build", description: "Run the CAS web application in standalone executable mode") {
+task executable(type: Exec, group: "CAS", description: "Run the CAS web application in standalone executable mode") {
     dependsOn setExecutable, 'build'
     doFirst {
         workingDir "."
@@ -100,7 +100,7 @@ task executable(type: Exec, group: "build", description: "Run the CAS web applic
     }
 }
 
-task debug(group: "build", description: "Debug the CAS web application in embedded mode on port 5005") {
+task debug(group: "CAS", description: "Debug the CAS web application in embedded mode on port 5005") {
     dependsOn 'build'
     doLast {
         logger.info "Debugging process is started in a suspended state, listening on port 5005."
@@ -160,7 +160,7 @@ task debugShell(group: "shell", description: "Run the CAS shell with debug optio
     }
 }
 
-task showConfiguration(group: "build", description: "Show configurations for each dependency, etc") {
+task showConfiguration(group: "CAS", description: "Show configurations for each dependency, etc") {
     doLast() {
         def cfg = project.hasProperty("configuration") ? project.property("configuration") : "compile"
         configurations.getByName(cfg).each { println it }
@@ -171,7 +171,7 @@ task allDependenciesInsight(group: "build", type: DependencyInsightReportTask, d
 
 task allDependencies(group: "build", type: DependencyReportTask, description: "Display a graph of all project dependencies") {}
 
-task casVersion(group: "build", description: "Display the current CAS version") {
+task casVersion(group: "CAS", description: "Display the current CAS version") {
     doFirst {
         def verbose = project.hasProperty("verbose") && Boolean.valueOf(project.getProperty("verbose"))
         if (verbose) {
@@ -192,7 +192,7 @@ task casVersion(group: "build", description: "Display the current CAS version") 
     }
 }
 
-task createKeystore(group: "build", description: "Create CAS keystore") {
+task createKeystore(group: "CAS", description: "Create CAS keystore") {
     doFirst {
         mkdir "/etc/cas"
 
@@ -227,7 +227,7 @@ task createKeystore(group: "build", description: "Create CAS keystore") {
     }
 }
 
-task listTemplateViews(group: "build", description: "List all CAS views") {
+task listTemplateViews(group: "CAS", description: "List all CAS views") {
     dependsOn explodeWar
 
     doFirst {
@@ -242,7 +242,7 @@ task listTemplateViews(group: "build", description: "List all CAS views") {
     }
 }
 
-task exportConfigMetadata(group: "build", description: "Export collection of CAS properties") {
+task exportConfigMetadata(group: "CAS", description: "Export collection of CAS properties") {
     doLast {
         def file = new File(project.rootDir, 'config-metadata.properties')
         file.withWriter('utf-8') { writer ->
@@ -299,7 +299,7 @@ task exportConfigMetadata(group: "build", description: "Export collection of CAS
     }
 }
 
-task getResource(group: "build", description: "Fetch a CAS resource and move it into the overlay") {
+task getResource(group: "CAS", description: "Fetch a CAS resource and move it into the overlay") {
     dependsOn explodeWar
 
     doFirst {
