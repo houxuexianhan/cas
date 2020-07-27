@@ -1,64 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 
 <head>
-    <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">CAS &#8211; 本地服务</title>
-
-    <!--/* Core CAS CSS */-->
-    <link rel="stylesheet" type="text/css" href="../static/css/normalize.css" th:href="@{#{webjars.normalize.css}}" />
-    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-grid.min.css" th:href="@{#{webjars.bootstrap-grid.css}}" />
-    <link rel="stylesheet" type="text/css" href="../static/css/material-components-web.min.css" th:href="@{#{webjars.material-components.css}}" />
-    <link rel="stylesheet" type="text/css" href="../static/css/mdi-font.css" th:href="@{#{webjars.mdi-font.css}}" />
-    <link rel="stylesheet" type="text/css" href="../static/css/cas.css" th:href="@{${#themes.code('cas.standard.css.file')}}"/>
+    <title th:text="#{cas.login.pagetitle}">CAS Acceptable Use Policy View</title>
+    <link href="../../static/css/cas.css" rel="stylesheet" th:remove="tag" />
     <link rel="stylesheet" type="text/css" href="../static/css/cas.css" th:href="@{${#themes.code('app1.css.file')}}"/>
 
-    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon"/>
 </head>
 
 <body class="login mdc-typography">
-<script th:replace="fragments/scripts" />
-<div th:replace="fragments/header :: header">
-    <a href="fragments/header.html">Header</a> fragment will go here
-</div>
-<div class="mdc-drawer-scrim"></div>
-
-<div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust d-flex justify-content-center">
-    <main role="main" id="main-content" class="container-lg py-4">
-        <h1>本地登录服务</h1>
-        <div layout:fragment="content" class="d-flex justify-content-center">
-
-            <div class="d-flex justify-content-center flex-md-row flex-column mdc-card mdc-card-content"
-                 th:classappend="${delegatedAuthenticationProviderConfigurations} OR ${accepttoApplicationId} ? 'w-lg-30' : 'w-lg-50'">
-                <section id="loginForm"
-                         class="login-section login-form"
-                         th:if="${@casThymeleafLoginFormDirector.isLoginFormViewable(#vars)}">
-                    <div th:replace="fragments/loginform :: loginform">
-                        <a href="fragments/loginform.html">Login Form goes here</a>
-                    </div>
-                </section>
-                <section id="providers" class="login-section login-providers" th:if="${delegatedAuthenticationProviderConfigurations}">
-                    <div th:replace="fragments/loginProviders :: loginProviders">
-                        <a href="fragments/loginProviders.html">loginProviders</a>
-                    </div>
-                </section>
-
-                <section id="acceptto" class="login-section login-qr d-xs-none d-md-block" th:if="${accepttoApplicationId}">
-                    <div th:replace="fragments/accepttoQRCode :: accepttoQRCode">
-                        <a href="fragments/accepttoQRCode.html">accepttoQRCode</a>
-                    </div>
-                </section>
+<div layout:fragment="content" class="d-flex justify-content-center">
+    <h1>本地登录服务</h1>
+    <div class="d-flex justify-content-center flex-md-row flex-column mdc-card mdc-card-content"
+         th:classappend="${delegatedAuthenticationProviderConfigurations} OR ${accepttoApplicationId} ? 'w-lg-30' : 'w-lg-50'">
+        <section id="loginForm"
+                 class="login-section login-form"
+                 th:if="${@casThymeleafLoginFormDirector.isLoginFormViewable(#vars)}">
+            <div th:replace="fragments/loginform :: loginform">
+                <a href="fragments/loginform.html">Login Form goes here</a>
             </div>
-        </div>
-    </main>
-</div>
-<div th:replace="fragments/footer :: footer">
-    <a href="fragments/footer.html">Footer</a> fragment will go here
-</div>
+        </section>
+        <section id="providers" class="login-section login-providers" th:if="${delegatedAuthenticationProviderConfigurations}">
+            <div th:replace="fragments/loginProviders :: loginProviders">
+                <a href="fragments/loginProviders.html">loginProviders</a>
+            </div>
+        </section>
 
+        <section id="acceptto" class="login-section login-qr d-xs-none d-md-block" th:if="${accepttoApplicationId}">
+            <div th:replace="fragments/accepttoQRCode :: accepttoQRCode">
+                <a href="fragments/accepttoQRCode.html">accepttoQRCode</a>
+            </div>
+        </section>
+    </div>
+</div>
 </body>
 
 </html>
+
