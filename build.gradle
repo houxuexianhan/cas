@@ -74,10 +74,9 @@ dependencies {
     implementation "org.apereo.cas:cas-server-support-json-service-registry:${casServerVersion}"
     implementation "org.apereo.cas:cas-server-support-jdbc:${casServerVersion}"
     implementation "org.apereo.cas:cas-server-support-jdbc-drivers:${casServerVersion}"
-    //implementation "mysql:mysql-connector-java:8.0.20"
     //restpwd ,forgot pwd
     implementation "org.apereo.cas:cas-server-support-pm-jdbc:${casServerVersion}"
-    //implementation "org.apereo.cas:cas-server-support-reports:${casServerVersion}"
+    //implementation "org.apereo.cas:cas-server-support-pac4j-webflow:6.2.1"
 }
 
 tasks.findByName("jibDockerBuild")
