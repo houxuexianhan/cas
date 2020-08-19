@@ -121,7 +121,10 @@ Run the CAS web application as a *standalone* executable WAR:
 
 ## External
 
-Deploy the binary web application file `cas.war` after a successful build to a servlet container of choice.
+Deploy the binary web application file `cas.war` after a successful build to a servlet container of choice.  
+NOTE: The cas.properties in the `/etc/cas/config`,must should be configured correctly
+ and run the command `./gradlew[.bat] copyCasConfiguration`,
+then the property `cas.server.name` will take effect when deploy to external servlet container.
 
 ## Docker
 
@@ -144,3 +147,80 @@ chmod +x *.sh
 ./docker-build.sh
 ./docker-run.sh
 ```
+### Support OAuth2
+implementation "org.apereo.cas:cas-server-support-oauth-webflow:${casServerVersion}"
+```bash
+cas.authn.oauth.grants.resource-owner.require-service-header=false
+cas.authn.oauth.user-profile-view-type=NESTED
+cas.authn.oauth.refresh-token.time-to-kill-in-seconds=2592000
+cas.authn.oauth.code.time-to-kill-in-seconds=30
+cas.authn.oauth.code.number-of-uses=1
+cas.authn.oauth.access-token.time-to-kill-in-seconds=7200
+cas.authn.oauth.access-token.max-time-to-live-in-seconds=28800
+```
+### Ldap  Authentication
+implementation "org.apereo.cas:cas-server-support-ldap:${casServerVersion}"
+```bash
+#ldap connection
+cas.authn.ldap[0].ldap-url=ldap://127.0.0.1:389
+cas.authn.ldap[0].bind-dn=cn=manager,dc=maxcrc,dc=com
+cas.authn.ldap[0].bind-credential=secret
+#ldap search
+cas.authn.ldap[0].principal-attribute-list=sn,cn
+cas.authn.ldap[0].principal-attribute-password=userPassword
+cas.authn.ldap[0].type=AUTHENTICATED
+cas.authn.ldap[0].base-dn=ou=user,dc=maxcrc,dc=com
+cas.authn.ldap[0].search-filter=cn={user}
+cas.authn.ldap[0].subtree-search=true
+cas.authn.ldap[0].dn-format=cn=%s,ou=user,dc=maxcrc,dc=com
+cas.authn.ldap[0].enhance-with-entry-resolver=true
+
+cas.authn.ldap[0].password-encoder.type=NONE
+```
+You can use Apache Directory Studio to browser ldap .  
+NOTE: 'password-encoder' must be set to 'NONE',and the stored password of entry in ldap database must
+be the format '{SHA}base64TheShaHash'，because the cas default handler(CompareAuthenticationHandler) compare 
+the value by first getting the password hash byte[] with SHA algorithm,and then Base64 encode the hash。  
+eg:  password plain text=jack  , then it is should stored in
+    ldap database  format={SHA}WWcnyKDqTbO6LOzu3Mus09ezcbg=     
+
+CompareAuthenticationHandler.java source code:
+```bash
+ /** Default password scheme. Value is {@value}. */
+  protected static final String DEFAULT_SCHEME = "SHA:SHA";
+
+  /** Default password attribute. Value is {@value}. */
+  protected static final String DEFAULT_ATTRIBUTE = "userPassword";
+
+  /** Password scheme. */
+  private Scheme passwordScheme = new Scheme(DEFAULT_SCHEME);
+
+  /** Password attribute. */
+  private String passwordAttribute = DEFAULT_ATTRIBUTE;
+@Override
+  protected AuthenticationHandlerResponse authenticateInternal(
+    final Connection c,
+    final AuthenticationCriteria criteria)
+    throws LdapException
+  {
+    final byte[] hash = digestCredential(criteria.getCredential(), passwordScheme.getAlgorithm());
+    final CompareResponse compareResponse = c.operation(
+      CompareRequest.builder()
+        .controls(processRequestControls(criteria))
+        .dn(criteria.getDn())
+        .name(passwordAttribute)
+        .value(String.format("{%s}%s", passwordScheme.getLabel(), LdapUtils.base64Encode(hash))).build()).execute();
+    return
+      new AuthenticationHandlerResponse(
+        compareResponse,
+        compareResponse.isTrue() ?
+          AuthenticationResultCode.AUTHENTICATION_HANDLER_SUCCESS :
+          AuthenticationResultCode.AUTHENTICATION_HANDLER_FAILURE,
+        c);
+  }
+```
+
+
+
+
+
