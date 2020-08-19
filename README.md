@@ -147,7 +147,7 @@ chmod +x *.sh
 ./docker-build.sh
 ./docker-run.sh
 ```
-### Support OAuth2
+### OAuth2 Protocol Support
 implementation "org.apereo.cas:cas-server-support-oauth-webflow:${casServerVersion}"
 ```bash
 cas.authn.oauth.grants.resource-owner.require-service-header=false
@@ -158,7 +158,7 @@ cas.authn.oauth.code.number-of-uses=1
 cas.authn.oauth.access-token.time-to-kill-in-seconds=7200
 cas.authn.oauth.access-token.max-time-to-live-in-seconds=28800
 ```
-### Ldap  Authentication
+### Ldap Authentication Support
 implementation "org.apereo.cas:cas-server-support-ldap:${casServerVersion}"
 ```bash
 #ldap connection
@@ -178,7 +178,7 @@ cas.authn.ldap[0].enhance-with-entry-resolver=true
 cas.authn.ldap[0].password-encoder.type=NONE
 ```
 You can use Apache Directory Studio to browser ldap .  
-NOTE: 'password-encoder' must be set to 'NONE',and the stored password of entry in ldap database must
+NOTE: 'password-encoder.type' must be set to 'NONE',and the stored password of entry in ldap database must
 be the format '{SHA}base64TheShaHash'，because the cas default handler(CompareAuthenticationHandler) compare 
 the value by first getting the password hash byte[] with SHA algorithm,and then Base64 encode the hash。  
 eg:  password plain text=jack  , then it is should stored in
