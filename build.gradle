@@ -4,7 +4,7 @@ buildscript {
         gradlePluginPortal()
         mavenCentral()
         jcenter()
-        maven { 
+        maven {
             url "https://repo.spring.io/libs-milestone" 
             mavenContent { releasesOnly() }
         }
@@ -30,7 +30,11 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
-    maven { 
+    maven {
+        url "https://build.shibboleth.net/nexus/content/repositories/releases"
+        mavenContent { releasesOnly() }
+    }
+    maven {
         url "https://oss.sonatype.org/content/repositories/snapshots" 
         mavenContent { snapshotsOnly() }
     }
@@ -76,7 +80,7 @@ dependencies {
     implementation "org.apereo.cas:cas-server-support-jdbc-drivers:${casServerVersion}"
     //restpwd ,forgot pwd
     implementation "org.apereo.cas:cas-server-support-pm-jdbc:${casServerVersion}"
-    //implementation "org.apereo.cas:cas-server-support-pac4j-webflow:6.2.1"
+    implementation "org.apereo.cas:cas-server-support-pac4j-webflow:${casServerVersion}"
     implementation "org.apereo.cas:cas-server-support-oauth-webflow:${casServerVersion}"
     implementation "org.apereo.cas:cas-server-support-ldap:${casServerVersion}"
 }

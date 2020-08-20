@@ -219,8 +219,13 @@ CompareAuthenticationHandler.java source code:
         c);
   }
 ```
-
-
+### Add Maven Repository
+```bash
+maven {
+        url "https://build.shibboleth.net/nexus/content/repositories/releases"
+        mavenContent { releasesOnly() }
+    }
+```
 
 
 
