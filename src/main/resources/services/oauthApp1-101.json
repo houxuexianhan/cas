@@ -5,7 +5,11 @@
   "serviceId" : "^(http|https|imaps)://.*",
   "name" : "OAuthService",
   "id" : 101,
-  "evaluationOrder": 101,
+  "description": "OAuth client",
+  "evaluationOrder": 1002,
   "bypassApprovalPrompt": true,
-  "generateRefreshToken": true
+  "generateRefreshToken": true,
+  "attributeReleasePolicy" : {
+    "@class" : "org.apereo.cas.services.ReturnAllAttributeReleasePolicy"
+  }
 }

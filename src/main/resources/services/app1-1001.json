@@ -1,9 +1,12 @@
 {
   "@class": "org.apereo.cas.services.RegexRegisteredService",
-  "serviceId": "^(https|imaps|http)://localhost:9090.*",
+  "serviceId": "^(https|imaps|http)://.*",
   "name": "本地测试系统",
   "id": 1001,
   "description": "本地系统描述",
   "evaluationOrder": 1001,
-  "theme":"app1"
+  "theme":"app1",
+  "attributeReleasePolicy" : {
+    "@class" : "org.apereo.cas.services.ReturnAllAttributeReleasePolicy"
+  }
 }
