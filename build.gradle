@@ -79,7 +79,8 @@ dependencies {
     implementation "org.apereo.cas:cas-server-support-jdbc:${casServerVersion}"
     implementation "org.apereo.cas:cas-server-support-jdbc-drivers:${casServerVersion}"
     //restpwd ,forgot pwd
-    implementation "org.apereo.cas:cas-server-support-pm-jdbc:${casServerVersion}"
+    implementation "org.apereo.cas:cas-server-support-pm-ldap:${casServerVersion}"
+    //implementation "org.apereo.cas:cas-server-support-pm-jdbc:${casServerVersion}"
     implementation "org.apereo.cas:cas-server-support-pac4j-webflow:${casServerVersion}"
     implementation "org.apereo.cas:cas-server-support-oauth-webflow:${casServerVersion}"
     implementation "org.apereo.cas:cas-server-support-ldap:${casServerVersion}"

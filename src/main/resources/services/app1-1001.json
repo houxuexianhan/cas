@@ -4,7 +4,7 @@
   "name": "本地测试系统",
   "id": 1001,
   "description": "本地系统描述",
-  "evaluationOrder": 1001,
+  "evaluationOrder": 132444,
   "theme":"app1",
   "attributeReleasePolicy" : {
     "@class" : "org.apereo.cas.services.ReturnAllAttributeReleasePolicy"
