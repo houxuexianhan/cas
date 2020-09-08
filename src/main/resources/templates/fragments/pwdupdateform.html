@@ -58,7 +58,14 @@
                     <i class="mdi mdi-alert mdc-text-field__icon text-danger caps-warn"></i>
                 </div>
             </div>
-
+            <div class="cas-field my-3 text-warning" >
+                <div class="suggestions banner banner-warning p-2 mb-2 d-flex align-items-center"
+                      role="alert"  style="border:none;">
+                    <p class="m-0">
+                        <span th:utext="#{screen.pm.password.policyText}" style="color: darkslateblue;">密码策略要求</span>&nbsp;
+                    </p>
+                </div>
+            </div>
             <div class="cas-field my-3 d-flex flex-column">
                 <div class="d-flex align-items-center">
                     <span th:text="#{screen.pm.password.strength}">Strength:</span>&nbsp;
